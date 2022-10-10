@@ -1,30 +1,10 @@
 import allure
 from selene import have, by
-from selene.support.shared import browser
-from selenium import webdriver
-from tests.utils import attach
-from selenium.webdriver.chrome.options import Options
 
 
 @allure.title("Successful fill form")
-def test_successful():
-    options = Options()
-    selenoid_capabilities = {
-        "browserName": "chrome",
-        "browserVersion": "100.0",
-        "selenoid:options": {
-            "enableVNC": True,
-            "enableVideo": True
-        }
-    }
-    options.capabilities.update(selenoid_capabilities)
-
-    driver = webdriver.Remote(
-        command_executor="https://user1:1234@selenoid.autotests.cloud/wd/hub",
-        options=options)
-
-    browser.config.driver = driver
-
+def test_successful(setup_browser):
+    browser = setup_browser
     first_name = "Natalya"
     last_name = "Alansi"
 
@@ -37,7 +17,7 @@ def test_successful():
     with allure.step("Fill form"):
         browser.element("#firstName").set_value(first_name)
         browser.element("#lastName").set_value(last_name)
-        browser.element("#userEmail").set_value("alex@egorov.com")
+        browser.element("#userEmail").set_value("nalansi@yahoo.com")
         browser.element("#genterWrapper").element(by.text("Other")).click()
         browser.element("#userNumber").set_value("1231231230")
         browser.element("#subjectsInput").send_keys("Maths")
@@ -52,8 +32,3 @@ def test_successful():
 
     with allure.step("Check form results"):
         browser.element("#example-modal-sizes-title-lg").should(have.text("Thanks for submitting the form"))
-
-    attach.add_html(browser)
-    attach.add_screenshot(browser)
-    attach.add_logs(browser)
-    attach.add_video(browser)
